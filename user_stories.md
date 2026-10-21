@@ -6,6 +6,7 @@
 2. As an admin, I want to view and manage patient accounts so that patient information stays organized.
 3. As an admin, I want to view appointments so that I can help manage the clinic’s schedule.
 4. As an admin, I want to control user access by role so that each person can use the features they need.
+5. As an admin, I want to view a list of registered doctors so that I can check which doctors are available in the system.
 
 ## Patient User Stories
 
