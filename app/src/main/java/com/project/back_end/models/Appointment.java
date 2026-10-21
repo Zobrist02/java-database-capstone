@@ -10,7 +10,9 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Entity
 @Table(name = "appointments")
@@ -78,5 +80,17 @@ public class Appointment {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public LocalDateTime getEndTime() {
+        return appointmentTime == null ? null : appointmentTime.plusHours(1);
+    }
+
+    public LocalDate getAppointmentDate() {
+        return appointmentTime == null ? null : appointmentTime.toLocalDate();
+    }
+
+    public LocalTime getAppointmentTimeOnly() {
+        return appointmentTime == null ? null : appointmentTime.toLocalTime();
     }
 }
