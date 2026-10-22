@@ -1,4 +1,3 @@
-// modals.js
 export function openModal(type) {
   let modalContent = '';
   if (type === 'addDoctor') {

@@ -11,8 +11,6 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
 
     Patient findByEmail(String email);
 
-    // Included as requested. Prefer findByEmail and findAllByPhone
-    // when phone numbers are not unique.
     Patient findByEmailOrPhone(String email, String phone);
 
     List<Patient> findAllByPhone(String phone);

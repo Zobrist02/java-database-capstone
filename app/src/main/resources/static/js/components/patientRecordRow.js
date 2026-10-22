@@ -1,4 +1,3 @@
-// patientRecordRow.js
 export function createPatientRecordRow(patient) {
   const tr = document.createElement("tr");
   tr.innerHTML = `
@@ -8,7 +7,6 @@ export function createPatientRecordRow(patient) {
       <td><img src="../assets/images/addPrescriptionIcon/addPrescription.png" alt="addPrescriptionIcon" class="prescription-btn" data-id="${patient.id}"></img></td>
     `;
 
-  // Attach event listeners
   tr.querySelector(".prescription-btn").addEventListener("click", () => {
     window.location.href = `/pages/addPrescription.html?mode=view&appointmentId=${patient.id}`;
   });

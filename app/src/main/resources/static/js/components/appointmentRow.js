@@ -1,4 +1,3 @@
-// appointmentRow.js
 export function getAppointments(appointment) {
   const tr = document.createElement("tr");
 
@@ -10,7 +9,6 @@ export function getAppointments(appointment) {
       <td><img src="../assets/images/edit/edit.png" alt="action" class="prescription-btn" data-id="${appointment.id}"></img></td>
     `;
 
-  // Attach event listeners
   tr.querySelector(".prescription-btn").addEventListener("click", () => {
     window.location.href = `addPrescription.html?id=${patient.id}`;
   });

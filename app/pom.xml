@@ -6,7 +6,7 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>3.4.4</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<relativePath/>
 	</parent>
 	<groupId>com.project</groupId>
 	<artifactId>back-end</artifactId>
@@ -78,7 +78,6 @@
 </dependency>
 
 
-<!-- https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-impl -->
 <dependency>
     <groupId>io.jsonwebtoken</groupId>
     <artifactId>jjwt-impl</artifactId>
@@ -86,7 +85,6 @@
     <scope>runtime</scope>
 </dependency>
 
-<!-- https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-jackson -->
 <dependency>
     <groupId>io.jsonwebtoken</groupId>
     <artifactId>jjwt-jackson</artifactId>

@@ -1,4 +1,3 @@
-# Build the app with Maven and Java 24
 FROM maven:3.9.9-eclipse-temurin-24 AS builder
 
 WORKDIR /app
@@ -8,7 +7,6 @@ COPY src ./src
 
 RUN mvn clean package -DskipTests
 
-# Run the app with Java 24
 FROM eclipse-temurin:24-jre
 
 WORKDIR /app

@@ -148,8 +148,6 @@ public class DoctorController {
             @PathVariable String time,
             @PathVariable String speciality) {
 
-        // ClinicService expects arguments in this order:
-        // name, specialty, time.
         return ResponseEntity.ok(
                 clinicService.filterDoctor(name, speciality, time));
     }

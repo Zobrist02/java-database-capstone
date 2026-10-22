@@ -64,8 +64,6 @@ public class PatientController {
         return clinicService.validatePatientLogin(login);
     }
 
-    // Supports both /patient/{id}/{token}
-    // and the lab example /patient/{id}/patient/{token}.
     @GetMapping({"/{id}/{token}", "/{id}/{user}/{token}"})
     public ResponseEntity<?> getPatientAppointments(
             @PathVariable Long id,
