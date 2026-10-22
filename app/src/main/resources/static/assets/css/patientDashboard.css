@@ -1,80 +1,264 @@
-/* This is the style sheet for the patientDashboard.html */
-  .card-actions {
-    background-color: #244557;
-    padding: 10px;
-    text-align: center;
-  }
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-  .card-actions:hover{
-    background-color: #1c3745;
-  }
-  .ripple-overlay {
-    position: fixed;
-    width: 20px;
-    height: 20px;
-    background-color: #1c3745;
-    border-radius: 50%;
-    z-index: 9999;
-    transform: translate(-50%, -50%) scale(0);
-    transition: transform 1s ease-out, opacity 1s ease;
-  }
-  
-  .ripple-overlay.active {
-    transform: translate(-50%, -50%) scale(150);
-    opacity: 1;
-  }
-  
-  .modalApp {
-    position: fixed;
-  bottom: -100%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 50%;
+html,
+body {
+  min-height: 100%;
+  font-family: Arial, sans-serif;
+  color: #153f40;
+}
+
+.wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  flex: 1;
+  padding: 38px clamp(16px, 5vw, 70px);
+  background:
+    linear-gradient(rgba(226, 247, 243, 0.9), rgba(226, 247, 243, 0.9)),
+    url("../images/defineRole/index.png") center / cover fixed;
+}
+
+.dashboard-heading,
+.patient-toolbar,
+.doctor-grid {
+  max-width: 1150px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.dashboard-heading {
+  margin-bottom: 22px;
+}
+
+.dashboard-heading h1 {
+  color: #003e3e;
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
+}
+
+.eyebrow {
+  margin-bottom: 8px;
+  color: #07877f;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.patient-toolbar {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) auto;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.searchBar,
+.filter-select,
+.input-field {
+  min-height: 44px;
+  padding: 10px 14px;
+  color: #153f40;
   background: #fff;
-  padding: 20px;
-  z-index: 10000;
-  transition: bottom 1.5s ease-in;
-  box-shadow: 0 -5px 10px rgba(0, 0, 0, 0.3);
-  border-radius: 10px 10px 0 0;
+  border: 1px solid #bfd4d1;
+  border-radius: 8px;
+  font: inherit;
+}
+
+.filter-wrapper {
+  display: flex;
+  gap: 10px;
+}
+
+.filter-select {
+  min-width: 170px;
+}
+
+.searchBar:focus,
+.filter-select:focus,
+.input-field:focus {
+  outline: 3px solid rgba(1, 124, 126, 0.2);
+  border-color: #017d7e;
+}
+
+.doctor-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(245px, 1fr));
+  gap: 18px;
+}
+
+.doctor-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid #d8e6e3;
+  border-radius: 14px;
+  box-shadow: 0 8px 22px rgba(0, 55, 55, 0.08);
+}
+
+.doctor-info {
+  flex: 1;
+  padding: 22px;
+}
+
+.doctor-info h3 {
+  margin-bottom: 12px;
+  color: #003e3e;
+  font-size: 1.25rem;
+}
+
+.doctor-info p {
+  margin: 8px 0;
+  color: #526b6b;
+  overflow-wrap: anywhere;
+}
+
+.card-actions {
+  display: flex;
+  justify-content: center;
+  padding: 14px;
+  color: #fff;
+  background: #063f46;
+}
+
+.card-actions button,
+.confirm-booking,
+.dashboard-btn {
+  padding: 11px 18px;
+  color: #fff;
+  background: #015c5d;
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+}
+
+.card-actions button:hover,
+.confirm-booking:hover,
+.dashboard-btn:hover {
+  filter: brightness(1.2);
+}
+
+.empty-state {
+  grid-column: 1 / -1;
+  padding: 32px;
+  color: #657878;
   text-align: center;
-  }
-  
-  .modalApp.active {
-    bottom: 0;
-  }
-  
-  .modalApp h2 {
-    margin-top: 20px;
-  }
-  
-  .modalApp input {
-    display: block;
-    margin: 10px auto;
-    padding: 10px;
-    width: 90%;
-    margin-bottom: 40px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 12px;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  overflow-y: auto;
+  padding: 24px;
+  background: rgba(0, 30, 30, 0.58);
+}
+
+.modal-content {
+  position: relative;
+  width: min(100%, 480px);
+  margin: 8vh auto;
+  padding: 32px;
+  background: #fff;
+  border-radius: 16px;
+}
+
+.close {
+  position: absolute;
+  top: 8px;
+  right: 14px;
+  color: #425b5b;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font-size: 2rem;
+}
+
+.modalApp {
+  position: fixed;
+  z-index: 1100;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: min(100%, 540px);
+  margin: 0 auto;
+  padding: 26px;
+  background: #fff;
+  border-radius: 18px 18px 0 0;
+  box-shadow: 0 -12px 40px rgba(0, 40, 40, 0.2);
+  transform: translateY(110%);
+  transition: transform 250ms ease;
+}
+
+.modalApp.active {
+  transform: translateY(0);
+}
+
+.modalApp .input-field {
+  display: block;
+  width: 90%;
+  margin: 12px auto;
+}
+
+.modalApp .confirm-booking {
+  display: block;
+  margin: 18px auto 0;
+}
+
+.ripple-overlay {
+  position: fixed;
+  z-index: 1050;
+  width: 24px;
+  height: 24px;
+  pointer-events: none;
+  background: rgba(1, 124, 126, 0.28);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  transition: transform 500ms ease, opacity 500ms ease;
+}
+
+.ripple-overlay.active {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(18);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+
+@media (max-width: 680px) {
+  .patient-toolbar {
+    grid-template-columns: 1fr;
   }
 
-  .modalApp select {
-    display: block;
-    margin: 10px auto;
-    padding: 10px;
-    width: 90%;
-    margin-bottom: 40px;
+  .filter-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
   }
-  
-  .confirm-booking {
-    padding: 10px 20px;
-    background: #1c3745;
-    color: #fff;
-    border: none;
-    cursor: pointer;
-    
-  
-    
+
+  .filter-select {
+    min-width: 0;
+    width: 100%;
   }
-  .confirm-booking:hover {
-    filter: brightness(1.2);
-    background-color: #1c3745;
+
+  .main-content {
+    padding: 26px 14px;
   }
-  
+}
