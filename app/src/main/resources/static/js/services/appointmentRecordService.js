@@ -3,14 +3,17 @@ import { API_BASE_URL } from "../config/config.js";
 const APPOINTMENT_API = `${API_BASE_URL}/appointments`;
 
 
-//This is for the doctor to get all the patient Appointments
 export async function getAllAppointments(date, patientName, token) {
-  const response = await fetch(`${APPOINTMENT_API}/${date}/${patientName}/${token}`);
+  const response = await fetch(
+    `${APPOINTMENT_API}/${date}/${encodeURIComponent(patientName)}/${encodeURIComponent(token)}`
+  );
+
   if (!response.ok) {
-    throw new Error("Failed to fetch appointments");
+    throw new Error(`Failed to fetch appointments (${response.status})`);
   }
 
-  return await response.json();
+  const result = await response.json();
+  return Array.isArray(result) ? result : result.appointments ?? [];
 }
 
 export async function bookAppointment(appointment, token) {

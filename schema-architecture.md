@@ -7,8 +7,8 @@ The data layer uses two databases. MySQL stores information about patients, doct
 
 1. A user opens a dashboard or uses a feature, such as viewing or booking an appointment.
 2. The request reaches the appropriate MVC controller or REST controller.
-3. The controller passes the request to a service.
-4. The service applies the needed rules and decides which data to access.
-5. The service calls a repository to read or update the data.
+3. The controller passes the request to a clinicService.
+4. The clinicService applies the needed rules and decides which data to access.
+5. The clinicService calls a repository to read or update the data.
 6. The repository works with MySQL through JPA or MongoDB through Spring Data.
-7. The result returns through the service and controller, then appears on a Thymeleaf page or is sent as a REST response.
+7. The result returns through the clinicService and controller, then appears on a Thymeleaf page or is sent as a REST response.

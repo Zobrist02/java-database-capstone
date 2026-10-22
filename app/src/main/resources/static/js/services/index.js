@@ -67,7 +67,7 @@ window.doctorLoginHandler = async function () {
     const response = await fetch(DOCTOR_API, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password })
+      body: JSON.stringify({ identifier: email, password })
     });
 
     if (!response.ok) {

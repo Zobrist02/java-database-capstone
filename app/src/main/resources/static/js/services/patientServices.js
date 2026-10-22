@@ -37,10 +37,13 @@ export async function patientSignup(data) {
 }
 
 export async function patientLogin(data) {
+  const email = data?.identifier ?? data?.email;
+  const password = data?.password;
+
   return fetch(`${PATIENT_API}/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data)
+    body: JSON.stringify({ identifier: email, password })
   });
 }
 

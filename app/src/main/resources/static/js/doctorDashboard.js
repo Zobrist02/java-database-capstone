@@ -62,11 +62,16 @@ async function loadAppointments() {
     }
 
     appointments.forEach((appointment) => {
-      const patient = appointment.patient;
+      const patient = {
+        id: appointment.patientId,
+        name: appointment.patientName,
+        phone: appointment.patientPhone,
+        email: appointment.patientEmail
+      };
 
-      if (patient) {
+      if (patient.id != null) {
         tableBody.appendChild(
-          createPatientRow(patient, appointment.id, appointment.doctor?.id)
+          createPatientRow(patient, appointment.id, appointment.doctorId)
         );
       }
     });

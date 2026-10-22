@@ -84,46 +84,43 @@ export function showBookingOverlay(e, doctor, patient) {
   });
 }
 
+window.addEventListener("clinic:book-doctor", (event) => {
+  const { doctor, patient, button } = event.detail;
+  const rect = button.getBoundingClientRect();
 
+  showBookingOverlay(
+    {
+      target: button,
+      clientX: rect.left + rect.width / 2,
+      clientY: rect.top + rect.height / 2
+    },
+    doctor,
+    patient
+  );
+});
 
-// Filter Input
 document.getElementById("searchBar").addEventListener("input", filterDoctorsOnChange);
 document.getElementById("filterTime").addEventListener("change", filterDoctorsOnChange);
 document.getElementById("filterSpecialty").addEventListener("change", filterDoctorsOnChange);
 
 
 
-function filterDoctorsOnChange() {
-  const searchBar = document.getElementById("searchBar").value.trim();
-  const filterTime = document.getElementById("filterTime").value;
-  const filterSpecialty = document.getElementById("filterSpecialty").value;
+async function filterDoctorsOnChange() {
+  const name = document.getElementById("searchBar").value.trim() || null;
+  const time = document.getElementById("filterTime").value || null;
+  const specialty = document.getElementById("filterSpecialty").value || null;
 
+  const doctors = await filterDoctors(name, time, specialty);
+  const contentDiv = document.getElementById("content");
+  contentDiv.innerHTML = "";
 
-  const name = searchBar.length > 0 ? searchBar : null;
-  const time = filterTime.length > 0 ? filterTime : null;
-  const specialty = filterSpecialty.length > 0 ? filterSpecialty : null;
-
-  filterDoctors(name, time, specialty)
-    .then(response => {
-      const doctors = response.doctors;
-      const contentDiv = document.getElementById("content");
-      contentDiv.innerHTML = "";
-
-      if (doctors.length > 0) {
-        console.log(doctors);
-        doctors.forEach(doctor => {
-          const card = createDoctorCard(doctor);
-          contentDiv.appendChild(card);
-        });
-      } else {
-        contentDiv.innerHTML = "<p>No doctors found with the given filters.</p>";
-        console.log("Nothing");
-      }
-    })
-    .catch(error => {
-      console.error("Failed to filter doctors:", error);
-      alert("❌ An error occurred while filtering doctors.");
+  if (doctors.length > 0) {
+    doctors.forEach((doctor) => {
+      contentDiv.appendChild(createDoctorCard(doctor));
     });
+  } else {
+    contentDiv.innerHTML = "<p>No doctors found with the given filters.</p>";
+  }
 }
 
 export function renderDoctorCards(doctors) {

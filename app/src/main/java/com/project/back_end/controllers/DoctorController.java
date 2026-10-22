@@ -1,61 +1,162 @@
 package com.project.back_end.controllers;
 
+import com.project.back_end.DTO.Login;
+import com.project.back_end.models.Doctor;
+import com.project.back_end.services.ClinicService;
+import com.project.back_end.services.DoctorService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+import java.util.List;
+import java.util.Map;
+
+@RestController
+@RequestMapping("${api.path}doctor")
 public class DoctorController {
 
-// 1. Set Up the Controller Class:
-//    - Annotate the class with `@RestController` to define it as a REST controller that serves JSON responses.
-//    - Use `@RequestMapping("${api.path}doctor")` to prefix all endpoints with a configurable API path followed by "doctor".
-//    - This class manages doctor-related functionalities such as registration, login, updates, and availability.
+    private final DoctorService doctorService;
+    private final ClinicService clinicService;
 
+    public DoctorController(
+            DoctorService doctorService,
+            ClinicService clinicService) {
+        this.doctorService = doctorService;
+        this.clinicService = clinicService;
+    }
 
-// 2. Autowire Dependencies:
-//    - Inject `DoctorService` for handling the core logic related to doctors (e.g., CRUD operations, authentication).
-//    - Inject the shared `Service` class for general-purpose features like token validation and filtering.
+    @GetMapping("/availability/{user}/{doctorId}/{date}/{token}")
+    public ResponseEntity<?> getDoctorAvailability(
+            @PathVariable String user,
+            @PathVariable Long doctorId,
+            @PathVariable String date,
+            @PathVariable String token) {
 
+        if (!isAllowedRole(user)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", "Invalid user role"));
+        }
 
-// 3. Define the `getDoctorAvailability` Method:
-//    - Handles HTTP GET requests to check a specific doctor’s availability on a given date.
-//    - Requires `user` type, `doctorId`, `date`, and `token` as path variables.
-//    - First validates the token against the user type.
-//    - If the token is invalid, returns an error response; otherwise, returns the availability status for the doctor.
+        var tokenCheck = clinicService.validateToken(token, user);
+        if (!tokenCheck.getStatusCode().is2xxSuccessful()) {
+            return tokenCheck;
+        }
 
+        try {
+            return ResponseEntity.ok(doctorService.getDoctorAvailability(
+                    doctorId, LocalDate.parse(date)));
+        } catch (DateTimeParseException exception) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("message", "Date must use YYYY-MM-DD format"));
+        }
+    }
 
-// 4. Define the `getDoctor` Method:
-//    - Handles HTTP GET requests to retrieve a list of all doctors.
-//    - Returns the list within a response map under the key `"doctors"` with HTTP 200 OK status.
+    @GetMapping
+    public List<Doctor> getDoctors() {
+        return doctorService.getDoctors();
+    }
 
+    @PostMapping("/{token}")
+    public ResponseEntity<Map<String, String>> addDoctor(
+            @PathVariable String token,
+            @RequestBody Doctor doctor) {
 
-// 5. Define the `saveDoctor` Method:
-//    - Handles HTTP POST requests to register a new doctor.
-//    - Accepts a validated `Doctor` object in the request body and a token for authorization.
-//    - Validates the token for the `"admin"` role before proceeding.
-//    - If the doctor already exists, returns a conflict response; otherwise, adds the doctor and returns a success message.
+        var tokenCheck = clinicService.validateToken(token, "admin");
+        if (!tokenCheck.getStatusCode().is2xxSuccessful()) {
+            return tokenCheck;
+        }
 
+        int result = doctorService.saveDoctor(doctor);
 
-// 6. Define the `doctorLogin` Method:
-//    - Handles HTTP POST requests for doctor login.
-//    - Accepts a validated `Login` DTO containing credentials.
-//    - Delegates authentication to the `DoctorService` and returns login status and token information.
+        if (result == 1) {
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(Map.of("message", "Doctor added to db"));
+        }
+        if (result == -1) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("message", "Doctor already exists"));
+        }
 
+        return ResponseEntity.internalServerError()
+                .body(Map.of("message", "Some internal error occurred"));
+    }
 
-// 7. Define the `updateDoctor` Method:
-//    - Handles HTTP PUT requests to update an existing doctor's information.
-//    - Accepts a validated `Doctor` object and a token for authorization.
-//    - Token must belong to an `"admin"`.
-//    - If the doctor exists, updates the record and returns success; otherwise, returns not found or error messages.
+    @PostMapping("/login")
+    public ResponseEntity<Map<String, String>> doctorLogin(
+            @RequestBody Login login) {
+        return doctorService.validateDoctor(login);
+    }
 
+    @PutMapping("/{token}")
+    public ResponseEntity<Map<String, String>> updateDoctor(
+            @PathVariable String token,
+            @RequestBody Doctor doctor) {
 
-// 8. Define the `deleteDoctor` Method:
-//    - Handles HTTP DELETE requests to remove a doctor by ID.
-//    - Requires both doctor ID and an admin token as path variables.
-//    - If the doctor exists, deletes the record and returns a success message; otherwise, responds with a not found or error message.
+        var tokenCheck = clinicService.validateToken(token, "admin");
+        if (!tokenCheck.getStatusCode().is2xxSuccessful()) {
+            return tokenCheck;
+        }
 
+        int result = doctorService.updateDoctor(doctor);
 
-// 9. Define the `filter` Method:
-//    - Handles HTTP GET requests to filter doctors based on name, time, and specialty.
-//    - Accepts `name`, `time`, and `speciality` as path variables.
-//    - Calls the shared `Service` to perform filtering logic and returns matching doctors in the response.
+        if (result == 1) {
+            return ResponseEntity.ok(Map.of("message", "Doctor updated"));
+        }
+        if (result == -1) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("message", "Doctor not found"));
+        }
+        if (result == 0 && doctor.getId() != null) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("message", "Email is already in use"));
+        }
 
+        return ResponseEntity.internalServerError()
+                .body(Map.of("message", "Some internal error occurred"));
+    }
 
+    @DeleteMapping("/{id}/{token}")
+    public ResponseEntity<Map<String, String>> deleteDoctor(
+            @PathVariable Long id,
+            @PathVariable String token) {
+
+        var tokenCheck = clinicService.validateToken(token, "admin");
+        if (!tokenCheck.getStatusCode().is2xxSuccessful()) {
+            return tokenCheck;
+        }
+
+        int result = doctorService.deleteDoctor(id);
+
+        if (result == 1) {
+            return ResponseEntity.ok(
+                    Map.of("message", "Doctor deleted successfully"));
+        }
+        if (result == -1) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("message", "Doctor not found with id"));
+        }
+
+        return ResponseEntity.internalServerError()
+                .body(Map.of("message", "Some internal error occurred"));
+    }
+
+    @GetMapping("/filter/{name}/{time}/{speciality}")
+    public ResponseEntity<?> filterDoctors(
+            @PathVariable String name,
+            @PathVariable String time,
+            @PathVariable String speciality) {
+
+        // ClinicService expects arguments in this order:
+        // name, specialty, time.
+        return ResponseEntity.ok(
+                clinicService.filterDoctor(name, speciality, time));
+    }
+
+    private boolean isAllowedRole(String role) {
+        return "admin".equalsIgnoreCase(role)
+                || "doctor".equalsIgnoreCase(role)
+                || "patient".equalsIgnoreCase(role);
+    }
 }
